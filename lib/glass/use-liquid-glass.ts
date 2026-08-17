@@ -3,10 +3,14 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
 /**
- * Only Chromium applies SVG filters inside `backdrop-filter`. Firefox and Safari
- * parse the `url()` and then discard the whole filter list, which would leave the
- * element with no blur at all — so those get a plain blur instead. There is no
- * feature query for this, hence the UA sniff, matching `lib/glass/glass-element.js`.
+ * Detects whether the browser will actually paint an SVG filter referenced from
+ * `backdrop-filter`. There is no feature query for this, hence the UA sniff.
+ *
+ * Desktop Chromium is the only engine that does. Firefox and Safari parse the
+ * `url()` and then discard the whole filter list. Chromium on Android is the
+ * nastiest case: it keeps the list but silently skips the `url()`, so the effect
+ * degrades to the leftover `blur()` calls — a weak few-pixel blur rather than the
+ * deliberate fallback. Better to opt those out and blur on purpose.
  */
 function detectSvgFilterSupport() {
   const probe = document.createElement("div");
@@ -14,7 +18,13 @@ function detectSvgFilterSupport() {
   if (!probe.style.backdropFilter) return false;
 
   const ua = navigator.userAgent.toLowerCase();
-  return /chrome|chromium|crios|edg/.test(ua) && !/firefox|fxios/.test(ua);
+
+  // Chrome, Edge and Firefox on iOS are WebKit wrappers, so they behave as Safari.
+  if (/crios|edgios|fxios|iphone|ipad|ipod/.test(ua)) return false;
+
+  if (/android|mobile/.test(ua)) return false;
+
+  return /chrome|chromium|edg/.test(ua) && !/firefox/.test(ua);
 }
 
 export interface UseLiquidGlassOptions {

@@ -89,7 +89,7 @@ export function Dock() {
                 key={item.href}
                 href={item.href}
                 onPointerDown={handleTabClick}
-                className="group relative select-none outline-none"
+                className="group relative select-none outline-none touch-manipulation"
               >
                 <motion.div
                   whileHover={{ scale: 1.08 }}

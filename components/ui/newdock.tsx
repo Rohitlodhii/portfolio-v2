@@ -191,6 +191,10 @@ export function NewDock({
                   />
                 </motion.div>
 
+                <div className="bg-secondary h-full w-10">
+                        hey
+                </div>
+
                 {/* Tooltip */}
                 <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 bg-popover text-popover-foreground text-[10px] px-2 py-0.5 rounded border border-border opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-sm whitespace-nowrap">
                   {item.label}

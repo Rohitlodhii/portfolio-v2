@@ -24,30 +24,34 @@ export function BlogList({ posts }: { posts: any[] }) {
           return (
             <Fragment key={post.slug}>
               {/* Section Header for 0th Blog */}
-             
 
               <Link
                 href={`/blogs/${post.slug}`}
-                className="group flex flex-col rounded-xl bg-orange-100 transition-all"
+                className="group flex flex-col rounded-xl bg-blue-300 transition-all"
               >
-                {/* Top Bar: Date & Read Time */}
-                <div className="px-3 py-1 flex items-center gap-1.5 text-[11px] sm:text-xs text-muted-foreground w-full">
-                  <span>{formatBlogDateLong(post.date)}</span>
-                  <span>●</span>
-                  <span>{post.readTimeMinutes} mins read</span>
+                {/* Top Bar: Latest Post Header */}
+                <div className="px-3 py-1 flex items-center gap-1.5 text-[11px] sm:text-xs font-medium text-orange-950/80 w-full">
+                  <span>Latest Post</span>
                 </div>
 
                 {/* Inner Card Box */}
                 <div className="flex flex-col w-full gap-6 rounded-xl border border-border bg-background p-2 pb-2 md:pb-2">
-                  {/* Title, Summary, Tags */}
+                  {/* Title, Summary, Date & Read Time, Tags */}
                   <div className="flex flex-col justify-between gap-6 px-1">
-                    <div className="flex flex-col gap-0">
+                    <div className="flex flex-col gap-1">
                       <h2 className="text-sm sm:text-lg font-semibold tracking-tight transition-colors group-hover:text-primary">
                         {post.title}
                       </h2>
                       <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
                         {post.summary}
                       </p>
+
+                      {/* Date & Read Time moved inside below summary */}
+                      <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-muted-foreground pt-1">
+                        <span>{formatBlogDateLong(post.date)}</span>
+                        <span>●</span>
+                        <span>{post.readTimeMinutes} mins read</span>
+                      </div>
                     </div>
 
                     {/* Bottom Tag List */}

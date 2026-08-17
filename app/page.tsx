@@ -1,8 +1,9 @@
-import ProfilePage from "@/components/base/profile";
+﻿import ProfilePage from "@/components/base/profile";
 import Descriptionpage from "@/components/base/description";
 import { getDescription, getProjects } from "@/config/data/files";
 import ProjectsPage from "@/components/base/Projects";
 import OtherProject from "@/components/base/OtherProject";
+import Hackathon from "@/components/base/hackathon";
 
 // These values come from JSON files that can change while the server is running.
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ export default async function Home() {
       <Descriptionpage data={descriptionData}/>
       <ProjectsPage data={projectsData}/>
       <OtherProject/>
+      <Hackathon/>
       
     </div>
   );
