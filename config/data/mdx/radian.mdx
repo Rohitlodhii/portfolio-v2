@@ -1,0 +1,202 @@
+---
+title: Radian
+lastupdated: 2026-08-12
+link: https://radiantts.vercel.app
+videolink: https://youtu.be/RyoC7w4BFNY
+smalldesc: Radian is a open source ai text-to-speech desktop app that converts your raw text to high studio quality ai voice which is powered by kokoro tts model , which is an 82M parameter model that gives good speed and performance on low end devices.
+---
+
+<p>
+What follows is a tour of how Radian works — from the TTS model behind it to the Python orchestration layer, local inference, voice generation, application architecture, packaging, and the performance optimizations that make it practical on everyday hardware. I bet you will love it.
+</p>
+
+## TTS model
+
+<p>
+Radian uses <b>Kokoro TTS</b>, an 82M parameter, highly efficient open-weight text-to-speech model. It was inspired by the StyleTTS 2 architecture and gained popularity for producing natural, human-like speech while remaining significantly smaller and more efficient than many much larger models. That balance between quality, model size, and inference speed made Kokoro the first choice for Radian.
+</p>
+
+### Why Kokoro?
+
+<p>
+The main idea behind Radian was simple: <b>good AI voice generation should not require a cloud API or a powerful GPU</b>. Kokoro makes this possible by providing surprisingly high-quality speech while keeping the computational requirements relatively low.
+</p>
+
+<List>
+    <li><b>Small Model</b> : At around 82M parameters, Kokoro is dramatically smaller than many modern generative audio models.</li>
+    <li><b>Efficient Inference</b> : The model can run locally without requiring a dedicated high-end GPU.</li>
+    <li><b>Open Weights</b> : The model can be bundled and executed locally instead of sending text to a third-party API.</li>
+    <li><b>Natural Speech</b> : Produces expressive and natural-sounding speech suitable for narration, videos, accessibility, and everyday TTS.</li>
+</List>
+
+### Key features of Kokoro TTS
+
+<List>
+    <li><b>Model Size</b> : The original PyTorch weights can be significantly larger, while optimized ONNX versions can reduce the footprint considerably.</li>
+    <li><b>Hardware Compatibility</b> : Designed for efficient inference and usable on relatively low-resource hardware.</li>
+    <li><b>Voice Styles</b> : Supports a large collection of voices across multiple languages and accents.</li>
+    <li><b>Audio Output</b> : Generates speech at a 24 kHz sampling rate for high-quality audio output.</li>
+</List>
+
+## Python backend
+
+<p>
+Radian keeps the actual speech synthesis pipeline separate from the desktop UI. The Electron application handles the interface and user interaction, while a lightweight <b>Python FastAPI backend</b> is responsible for loading the model and generating audio.
+</p>
+
+<p>
+When the user enters text, the desktop application sends it to the local backend through an HTTP request. The backend processes the text, runs it through the Kokoro pipeline, synthesizes the speech, saves the generated audio, and returns the result back to the desktop application.
+</p>
+
+<CodeBlock language="text">
+Text → Electron UI → FastAPI → Kokoro TTS → Audio → Electron
+</CodeBlock>
+
+<p>
+Because the backend runs locally, the text does not need to leave the user's machine. There is no external TTS API involved in the core generation pipeline, which also means there are no per-request API costs and the application can continue working without an internet connection once the required model files are available.
+</p>
+
+### Local inference
+
+<p>
+One of the main design decisions behind Radian is <b>local inference</b>. Instead of uploading text to a cloud provider, Radian keeps the complete synthesis pipeline on the user's machine.
+</p>
+
+<List>
+    <li><b>Privacy</b> : Text stays on the local machine during synthesis.</li>
+    <li><b>No API Cost</b> : There is no per-character or per-request TTS billing.</li>
+    <li><b>Offline Usage</b> : Voice generation can work without a network connection after installation.</li>
+    <li><b>Lower Latency</b> : Requests do not need to travel to a remote inference server.</li>
+</List>
+
+## Application architecture
+
+<p>
+Radian is essentially split into two layers. The <b>Electron frontend</b> is responsible for the user experience, while the <b>Python service</b> owns the machine-learning workload.
+</p>
+
+<Image src="/project/radian.png" alt="Radian Architecture" />
+
+<p>
+This separation also makes the project easier to maintain. The UI does not need to understand the internals of the neural network, while the Python backend can evolve independently as the model, inference runtime, or audio pipeline changes.
+</p>
+
+## Audio generation pipeline
+
+<p>
+The complete generation process is intentionally straightforward. Radian receives raw text from the user, processes it through the TTS pipeline, and produces an audio file that can be played directly from the desktop application.
+</p>
+
+<List>
+    <li><b>1. Text Input</b> : The user enters or pastes the text into Radian.</li>
+    <li><b>2. API Request</b> : Electron sends the text and selected voice configuration to the local FastAPI server.</li>
+    <li><b>3. Text Processing</b> : The backend prepares the input for the TTS pipeline and handles pronunciation processing.</li>
+    <li><b>4. Model Inference</b> : Kokoro generates the speech waveform locally.</li>
+    <li><b>5. Audio Export</b> : The generated waveform is encoded and returned as an audio file.</li>
+    <li><b>6. Playback</b> : Electron loads the resulting audio and makes it available to the user.</li>
+</List>
+
+## Pronunciation and G2P
+
+<p>
+Text-to-speech is not simply a matter of passing characters directly into a neural network. The text needs to be converted into a representation that captures how words should actually be pronounced.
+</p>
+
+<p>
+Radian uses the <b>Misaki G2P</b> pipeline for grapheme-to-phoneme conversion, with <b>eSpeak</b> available as a fallback. This allows the synthesis pipeline to convert written text into phonetic representations before passing it into Kokoro.
+</p>
+
+<CodeBlock language="text">
+Raw Text
+   ↓
+Text Normalization
+   ↓
+Grapheme → Phoneme
+   ↓
+Kokoro TTS
+   ↓
+Waveform
+   ↓
+Audio File
+</CodeBlock>
+
+## Why desktop instead of a web app?
+
+<p>
+Radian is intentionally built as a desktop application because local AI inference changes the trade-offs significantly. A web application would either need to run a heavy model inside the browser or rely on a remote inference server.
+</p>
+
+<p>
+With Electron, Radian can package the user interface together with the local application environment and communicate with the Python inference service directly. This makes Radian feel more like a normal desktop utility while keeping the AI workload local.
+</p>
+
+## Packaging
+
+<p>
+The application uses <b>Electron Forge</b> for the desktop build and packaging workflow. The goal is to turn the individual UI, Python service, inference runtime, and model assets into a setup that can be used without requiring the user to manually configure the entire development environment.
+</p>
+
+<p>
+The model is also one of the largest parts of the final application footprint, so keeping the inference runtime and model assets optimized is important for distribution.
+</p>
+
+## Performance
+
+<p>
+Radian is designed around a simple constraint: <b>AI voice generation should remain useful even on machines that are not built for machine learning</b>.
+</p>
+
+<p>
+Kokoro's relatively small parameter count helps considerably here. Instead of depending on a large cloud model or a multi-billion-parameter local model, Radian can perform inference using a much smaller model while still producing high-quality speech.
+</p>
+
+<List>
+    <li><b>Low Model Size</b> : Small enough to make local distribution practical.</li>
+    <li><b>CPU-Friendly</b> : Designed to remain usable without requiring a high-end GPU.</li>
+    <li><b>Local Execution</b> : Avoids network latency and remote inference infrastructure.</li>
+    <li><b>Efficient Runtime</b> : ONNX-based inference helps keep the deployment lightweight.</li>
+</List>
+
+## What I wanted Radian to solve
+
+<p>
+Most AI TTS products make you think about API keys, usage limits, subscriptions, character quotas, and network connectivity. I wanted something different.
+</p>
+
+<p>
+Radian started with a much simpler idea: <b>open the app, type something, choose a voice, and generate the audio.</b> Everything important happens locally.
+</p>
+
+<p>
+The project is also open source, so the implementation is not hidden behind a black-box service. You can inspect the application, understand how the pipeline works, and run the model yourself.
+</p>
+
+## Technology
+
+<TechStack>
+  <Badge>Electron</Badge>
+  <Badge>React</Badge>
+  <Badge>Python</Badge>
+  <Badge>FastAPI</Badge>
+  <Badge>Kokoro TTS</Badge>
+  <Badge>ONNX Runtime</Badge>
+  <Badge>Misaki G2P</Badge>
+  <Badge>eSpeak</Badge>
+  <Badge>Electron Forge</Badge>
+  <Badge>Tailwind CSS</Badge>
+</TechStack>
+
+## Final thoughts
+
+<p>
+Radian is a relatively small project, but it explores an idea I really like: <b>bringing useful AI models directly onto the user's machine instead of turning every interaction into an API request.</b>
+</p>
+
+<p>
+Kokoro made that idea practical. Its combination of model size, synthesis quality, and inference performance makes it a great fit for a lightweight desktop TTS application.
+</p>
+
+<p>
+If you want to see Radian in action, check out the demo above or visit the project website.
+</p>
+

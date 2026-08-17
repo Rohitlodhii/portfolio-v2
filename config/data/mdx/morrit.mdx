@@ -1,0 +1,213 @@
+---
+title: Morrit
+lastupdated: 2026-08-12
+link: https://morrit.vercel.app
+videolink: https://youtu.be/Tswd9H06a3o
+smalldesc: Morrit is a React inspector that lets you select elements directly from your running application and jump to the exact source code responsible for rendering them, making frontend changes faster and reducing the searching and token overhead for AI coding agents.
+---
+
+<p>
+Morrit is a compile-time React source inspector for <b>Vite</b> and <b>Next.js</b>. It allows you to select any UI element in your running application during development and immediately open the corresponding source file at the exact line in VS Code.
+</p>
+
+## How it works
+
+<p>
+During the development build, Morrit injects a <code>data-morrit</code> attribute into every JSX element with its relative file path and line number. When inspector mode is active, clicking an element opens a <code>vscode://file/</code> protocol link directly in the browser. This eliminates the need for running an API route, dev middleware, or custom Babel servers.
+</p>
+
+---
+
+## Vite
+
+### 1. Install
+
+```bash
+npm install morrit
+```
+
+### 2. Add the plugin
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import morrit from 'morrit/vite-plugin'
+
+export default defineConfig({
+  plugins: [
+    react(),
+    morrit({
+      rootDir: __dirname,
+    }),
+  ],
+  optimizeDeps: {
+    include: ['morrit'],
+  },
+})
+```
+
+### 3. Add the inspector
+
+```tsx
+// src/main.tsx or src/App.tsx
+import { MorritInspector } from 'morrit'
+
+function App() {
+  return (
+    <>
+      {/* your app */}
+      <MorritInspector />
+    </>
+  )
+}
+```
+
+Toggle the inspector with **Ctrl+Shift+I**, then click any element to open its source.
+
+## Next.js (App Router)
+
+### 1. Install
+
+```bash
+npm install morrit
+```
+
+### 2. Wrap your Next.js config
+
+```js
+// next.config.js
+const { withMorrit } = require('morrit/next')
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // your config
+}
+
+module.exports = withMorrit(nextConfig)
+```
+
+### 3. Add the inspector to your layout
+
+```tsx
+// app/layout.tsx
+import { MorritInspector } from 'morrit/next/client'
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        {children}
+        <MorritInspector />
+      </body>
+    </html>
+  )
+}
+```
+
+That's it. No Babel config, no API routes, no custom server. SWC stays enabled.
+
+---
+
+## Usage
+
+Once the inspector is active (click the floating button or press **Ctrl+Shift+I**):
+
+1. **Hover** over any element to see its source file and line in a tooltip
+2. **Click** an element to open a popup with the full path
+3. **Copy** the path or **Open in VS Code** from the popup
+
+The floating button shows a random emoji and is only rendered in development mode.
+
+---
+
+## Webpack (non-Next.js)
+
+```js
+const { MorritWebpackPlugin } = require('morrit/webpack-plugin')
+
+module.exports = {
+  plugins: [
+    new MorritWebpackPlugin({
+      rootDir: __dirname,
+    }),
+  ],
+}
+```
+
+---
+
+## Babel (standalone)
+
+```js
+// babel.config.js
+module.exports = {
+  plugins: [
+    ['morrit/babel-plugin', {
+      attributeName: 'data-morrit',
+      relativeTo: __dirname,
+    }],
+  ],
+}
+```
+
+---
+
+## Options
+
+All plugins accept these options:
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `attributeName` | `string` | `'data-morrit'` | HTML attribute name for source metadata |
+| `rootDir` | `string` | `process.cwd()` | Project root for computing relative paths |
+| `exclude` | `string[]` | `['Fragment', 'React.Fragment']` | Tag names to skip |
+
+---
+
+## From inspection to AI agents
+
+<p>
+While Morrit is highly useful for human developers, its primary superpower is reducing the discovery overhead for AI coding agents. Instead of receiving a vague request like "make this heading bigger" and wasting tokens searching the repository, an agent receives the exact coordinates of the edit.
+</p>
+
+<CodeBlock language="text">
+{`Target
+File: components/ui/Title.tsx
+Location: line 47
+Element: h1
+Text: "Click any element. Land on the exact line."
+Classes: text-4xl font-semibold leading-tight
+
+Change:
+Make this text look bigger.`}
+</CodeBlock>
+
+<p>
+This eliminates the repository-searching phase entirely, saving valuable token context and making the AI's edits faster and highly deterministic.
+</p>
+
+---
+
+## Why morrit?
+
+- **No server middleware** — uses `vscode://file/` protocol directly from the browser.
+- **No Babel config** in Next.js — works as a webpack loader, preserving SWC speed.
+- **Dead simple** — two lines of setup for Vite or Next.js.
+- **Dev-only** — completely stripped out and never runs in production.
+
+---
+
+## Technology
+
+<TechStack>
+  <Badge>React</Badge>
+  <Badge>TypeScript</Badge>
+  <Badge>Babel</Badge>
+  <Badge>Vite</Badge>
+  <Badge>Webpack</Badge>
+  <Badge>Next.js</Badge>
+  <Badge>Tailwind CSS</Badge>
+  <Badge>VS Code</Badge>
+  <Badge>AI Coding Agents</Badge>
+</TechStack>
