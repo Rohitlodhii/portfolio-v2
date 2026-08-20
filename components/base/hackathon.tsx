@@ -236,7 +236,7 @@ const Hackathon = () => {
   const reduceMotion = useReducedMotion() ?? false
 
   return (
-    <section className="pt-14">
+    <section className="pt-4">
       <div className="text-sm font-medium text-muted-foreground">Hackathons</div>
       <Seprator />
       {/* Clearing on the list rather than per row means crossing a separator
