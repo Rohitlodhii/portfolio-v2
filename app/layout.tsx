@@ -20,9 +20,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col pb-16 sm:pb-20">
+      <body  className="min-h-full flex flex-col pb-16 sm:pb-20">
         <TopScrollBlur />
         {children}
         {/* <Dock /> */}
