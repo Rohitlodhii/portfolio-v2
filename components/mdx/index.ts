@@ -10,6 +10,7 @@ export { Link } from "./Link";
 export { List } from "./List";
 export { Paragraph } from "./Paragraph";
 export { Screenshot } from "./Screenshot";
+export { Table } from "./Table";
 export { TechStack } from "./TechStack";
 export { Terminal } from "./Terminal";
 export { Image } from "./Image";

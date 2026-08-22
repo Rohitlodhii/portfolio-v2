@@ -1,7 +1,7 @@
 import type { MDXComponents } from "mdx/types";
 import { Children, isValidElement } from "react";
 import type { ReactNode } from "react";
-import { Architecture, Article, Badge, Callout, CodeBlock, Feature, FeatureGrid, Highlight, Link, List, Paragraph, Screenshot, TechStack, Terminal, Image, OptionsTable } from "@/components/mdx";
+import { Architecture, Article, Badge, Callout, CodeBlock, Feature, FeatureGrid, Highlight, Link, List, Paragraph, Screenshot, TechStack, Terminal, Image, OptionsTable, Table } from "@/components/mdx";
 import { slugifyHeading } from "@/lib/mdx-headings";
 
 function getHeadingText(children: ReactNode): string {
@@ -24,7 +24,7 @@ function Heading({ level, children, className }: { level: 1 | 2 | 3; children?: 
 }
 
 export const mdxComponents = {
-  Architecture, Article, Badge, Callout, CodeBlock, Feature, FeatureGrid, Highlight, Link, List, P: Paragraph, Screenshot, TechStack, Terminal, Image, OptionsTable,
+  Architecture, Article, Badge, Callout, CodeBlock, Feature, FeatureGrid, Highlight, Link, List, P: Paragraph, Screenshot, TechStack, Terminal, Image, OptionsTable, Table,
   pre: CodeBlock,
   h1: ({ children }: { children?: ReactNode }) => <Heading level={1} className="scroll-mt-36 mb-5 mt-10 text-lg font-normal tracking-tight first:mt-0">{children}</Heading>,
   h2: ({ children }: { children?: ReactNode }) => <Heading level={2} className="scroll-mt-36 mb-3 mt-10 border-b border-border/70 pb-2 text-md font-normal tracking-tight">{children}</Heading>,

@@ -5,6 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  color-scheme: light;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -41,6 +42,9 @@
 }
 
 .dark {
+  /* Hands the browser's own surfaces — scrollbars, form controls, the mobile
+     address bar — to the dark palette too, so night mode covers the chrome. */
+  color-scheme: dark;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -124,16 +128,68 @@ body {
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
 }
 
-/* rehype-highlight runs while MDX is compiled, so these tokens add no client JS. */
+/* Neutral text selection — a translucent wash of the foreground so it reads the
+   same in light and dark without pulling in any hue. */
+::selection {
+  background-color: color-mix(in oklch, var(--foreground) 20%, transparent);
+}
+
+/* Thin, minimal scrollbars everywhere. `color-scheme` above keeps the
+   browser's fallback palette in sync with light/dark. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklch, var(--foreground) 25%, transparent) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklch, var(--foreground) 25%, transparent);
+  border-radius: calc(infinity * 1px);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in oklch, var(--foreground) 40%, transparent);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* rehype-highlight runs while MDX is compiled, so these tokens add no client JS.
+   Two sets: the code surface is `bg-secondary`, which is near-white by day and
+   near-black at night, so the same hue has to be darkened or lifted to stay legible. */
 .hljs-comment,
-.hljs-quote { color: oklch(0.58 0 0); }
+.hljs-quote { color: oklch(0.55 0 0); }
 .hljs-keyword,
 .hljs-selector-tag,
-.hljs-built_in { color: oklch(0.78 0.12 300); }
+.hljs-built_in { color: oklch(0.47 0.19 300); }
 .hljs-string,
 .hljs-attr,
-.hljs-symbol { color: oklch(0.8 0.13 150); }
+.hljs-symbol { color: oklch(0.5 0.13 150); }
 .hljs-number,
-.hljs-literal { color: oklch(0.8 0.13 80); }
+.hljs-literal { color: oklch(0.52 0.13 70); }
 .hljs-title,
-.hljs-function { color: oklch(0.82 0.11 220); }
+.hljs-function { color: oklch(0.5 0.15 240); }
+
+.dark .hljs-comment,
+.dark .hljs-quote { color: oklch(0.58 0 0); }
+.dark .hljs-keyword,
+.dark .hljs-selector-tag,
+.dark .hljs-built_in { color: oklch(0.78 0.12 300); }
+.dark .hljs-string,
+.dark .hljs-attr,
+.dark .hljs-symbol { color: oklch(0.8 0.13 150); }
+.dark .hljs-number,
+.dark .hljs-literal { color: oklch(0.8 0.13 80); }
+.dark .hljs-title,
+.dark .hljs-function { color: oklch(0.82 0.11 220); }

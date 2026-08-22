@@ -1,0 +1,435 @@
+---
+title: fastdroid
+lastupdated: 2026-08-12
+link: https://getfastdroid.vercel.app
+videolink: https://youtu.be/IIW24-qGy7Q
+smalldesc: A lightweight Android emulator built specifically for React Native and Expo development.FastDroid provides a developer-focused emulator workflow with AVD management, fast startup, AI-agent control through MCP, screenshots, diagnostics, and direct React Native project execution.
+---
+
+
+
+
+FastDroid is a lightweight Android emulator desktop application built specifically for
+**React Native and Expo developers**. It provides a focused alternative to the Android
+Studio emulator, removing unnecessary IDE overhead while keeping the Android SDK and AVD
+workflow developers actually need.
+
+FastDroid is also designed to be **AI-agent friendly**. Through its MCP interface,
+coding agents such as Claude Code, Codex, and other MCP-compatible agents can start an
+emulator, wait for Android to boot, inspect its state, capture screenshots, and interact
+with the development workflow programmatically.
+
+---
+
+## Why FastDroid?
+
+The standard Android development workflow often requires installing and running Android
+Studio even when the developer only needs an emulator for React Native development.
+Android Studio's emulator can consume significant CPU, RAM, and disk resources.
+
+FastDroid focuses specifically on the emulator portion of that workflow.
+
+* **Lightweight** — designed around React Native development rather than a complete IDE
+* **Developer-focused** — only exposes emulator functionality that matters during app development
+* **Fast startup** — optimized emulator lifecycle and boot workflow
+* **AVD management** — create, inspect, configure, start, and stop Android Virtual Devices
+* **Expo-friendly** — designed for quickly running Expo projects on Android
+* **React Native-friendly** — supports the normal Metro / React Native development workflow
+* **AI-agent ready** — exposes emulator operations through MCP
+* **Inspectable** — agents can capture screenshots and inspect emulator state
+* **Persistent** — avoids unnecessary factory resets and preserves emulator data
+
+---
+
+## Core Workflow
+
+FastDroid follows a predictable emulator lifecycle:
+
+```text
+Check running devices
+        ↓
+Existing emulator?
+   ↙           ↘
+ YES            NO
+  ↓              ↓
+Reuse it     List available AVDs
+                 ↓
+          Start emulator
+                 ↓
+           Wait for boot
+                 ↓
+        Verify boot completed
+                 ↓
+          Android ready
+                 ↓
+      Run React Native / Expo
+```
+
+The important part of this workflow is that **starting an emulator does not mean Android
+is ready**. FastDroid explicitly waits for the Android system to finish booting before
+application-related operations continue.
+
+---
+
+## AI Agent Integration
+
+FastDroid was designed with AI coding agents as a first-class use case.
+Instead of an agent blindly executing Android commands, it can use structured emulator
+operations through MCP.
+
+A typical agent workflow looks like:
+
+```text
+AI Agent
+   │
+   │ MCP
+   ▼
+FastDroid MCP Server
+   │
+   ├── Emulator lifecycle
+   ├── AVD management
+   ├── Boot monitoring
+   ├── Screenshots
+   ├── Diagnostics
+   └── Project execution
+   │
+   ▼
+Android Emulator
+   │
+   ▼
+React Native / Expo Application
+```
+
+This makes the emulator a controllable development environment rather than something
+the AI agent has to operate indirectly through shell commands.
+
+---
+
+## MCP
+
+FastDroid exposes emulator capabilities through an MCP server.
+
+<Table
+  title="Emulator Lifecycle"
+  rows={[
+    { name: "list_running_devices", description: "Find currently running emulators" },
+    { name: "list_devices", description: "List available AVDs" },
+    { name: "get_device", description: "Inspect a specific emulator" },
+    { name: "start_emulator", description: "Start an AVD" },
+    { name: "wait_for_boot", description: "Wait until Android becomes available" },
+    { name: "is_boot_completed", description: "Verify Android boot completion" },
+    { name: "get_emulator_status", description: "Inspect current emulator state" },
+    { name: "get_boot_progress", description: "Inspect boot progress" },
+    { name: "restart_emulator", description: "Restart an emulator" },
+    { name: "stop_emulator", description: "Gracefully shut down an emulator" },
+    { name: "force_stop_emulator", description: "Forcefully terminate an emulator" },
+    { name: "factory_reset", description: "Reset emulator data" }
+  ]}
+/>
+
+<Table
+  title="AVD Management"
+  rows={[
+    { name: "list_system_images", description: "List installed Android system images" },
+    { name: "get_avd_config", description: "Read AVD configuration" },
+    { name: "update_avd_config", description: "Modify AVD configuration" }
+  ]}
+/>
+
+<Table
+  title="Diagnostics"
+  rows={[
+    { name: "get_process_info", description: "Inspect emulator process/resource information" },
+    { name: "get_emulator_logs", description: "Retrieve emulator logs" }
+  ]}
+/>
+
+---
+
+## Standard React Native / Expo Workflow
+
+When an agent needs to run a React Native or Expo application:
+
+### 1. Check running devices
+
+```text
+list_running_devices
+```
+
+Always reuse an already-running compatible emulator when possible.
+
+### 2. Find an available AVD
+
+If nothing is running:
+
+```text
+list_devices
+```
+
+Select an appropriate development emulator.
+
+### 3. Start the emulator
+
+```text
+start_emulator
+```
+
+### 4. Wait for Android
+
+```text
+wait_for_boot
+```
+
+Do not replace this with an arbitrary delay such as:
+
+```bash
+sleep 30
+```
+
+Boot time varies depending on the machine, AVD configuration, cold/warm boot state,
+and Android version.
+
+### 5. Verify boot completion
+
+```text
+is_boot_completed
+```
+
+Only after this succeeds should the agent continue with the React Native or Expo workflow.
+
+### 6. Run the application
+
+For example, an Expo project can proceed with its normal Android development command:
+
+```bash
+npx expo start --android
+```
+
+The exact command depends on the project's configuration and package manager.
+
+---
+
+## React Native Development
+
+FastDroid works with the standard React Native development model:
+
+```text
+React Native Project
+        │
+        ▼
+Metro Bundler
+        │
+        ▼
+FastDroid Emulator
+        │
+        ▼
+Android Application
+```
+
+The emulator can be used for:
+
+* UI development
+* navigation testing
+* API integration testing
+* debugging
+* development builds
+* Expo development builds
+* React Native CLI applications
+* automated agent-driven verification
+
+---
+
+## Expo Development
+
+FastDroid is particularly useful for Expo workflows where the developer wants to test
+Android without keeping Android Studio open.
+
+Typical workflow:
+
+```bash
+npm install
+
+npx expo start --android
+```
+
+FastDroid provides the Android environment required by the development workflow while
+leaving the rest of the development environment focused on the React / TypeScript project.
+
+---
+
+## Screenshots and Visual Inspection
+
+A major FastDroid capability is making the emulator visually inspectable by AI agents.
+
+An agent can follow a loop such as:
+
+```text
+Modify application
+      ↓
+Run / reload application
+      ↓
+Capture screenshot
+      ↓
+Inspect UI
+      ↓
+Identify problem
+      ↓
+Modify source
+      ↓
+Repeat
+```
+
+This is especially useful for tasks such as:
+
+* fixing layout problems
+* verifying responsive UI
+* checking navigation
+* validating component rendering
+* detecting runtime errors visually
+* confirming that an implementation matches a design
+
+This turns FastDroid into a feedback loop for AI-assisted mobile development rather than
+merely an Android runtime.
+
+
+## AVD Management
+
+Before creating a new development emulator:
+
+```text
+list_system_images
+```
+
+If the required system image already exists, create the AVD using the installed image.
+
+If it does not exist, FastDroid can support an AVD creation workflow that downloads the
+required Android system image.
+
+A typical environment may contain images such as:
+
+```text
+system-images;android-34;google_apis;x86_64
+system-images;android-35;google_apis;x86_64
+system-images;android-36;...
+```
+
+The exact image should be selected according to the React Native / Expo project and host
+architecture.
+
+
+## FastDroid vs Android Studio Emulator
+
+FastDroid is not intended to replace Android Studio as a complete Android development IDE.
+
+Instead, it focuses on a narrower problem:
+
+```text
+Android Studio
+├── IDE
+├── Gradle tooling
+├── Android SDK management
+├── Emulator
+├── Profiler
+├── Logcat
+└── Many other Android development tools
+
+FastDroid
+└── React Native / Expo focused emulator workflow
+    ├── AVD management
+    ├── Emulator lifecycle
+    ├── Boot monitoring
+    ├── Diagnostics
+    ├── Screenshots
+    └── AI / MCP control
+```
+
+For a React Native developer who primarily works in VS Code or another editor, FastDroid
+can provide the Android runtime without requiring the full Android Studio experience.
+
+---
+
+## AI-Native Development
+
+FastDroid is built around a different assumption from traditional emulator software:
+**the developer may not be the only entity operating the emulator.**
+
+An AI coding agent can:
+
+1. Inspect the current emulator state
+2. Start an emulator when necessary
+3. Wait for Android to become ready
+4. Launch the application
+5. Capture screenshots
+6. Inspect the result
+7. Make source-code changes
+8. Re-run the application
+9. Verify the result
+
+This creates an iterative development loop:
+
+```text
+        ┌─────────────────────┐
+        │    Source Code      │
+        └──────────┬──────────┘
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │    AI Agent         │
+        └──────────┬──────────┘
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │    FastDroid        │
+        └──────────┬──────────┘
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │ Android Application │
+        └──────────┬──────────┘
+                   │
+                   ▼
+             Screenshot
+                   │
+                   ▼
+              AI Agent
+                   │
+                   └──────→ Iterate
+```
+
+---
+
+## Technology
+
+<TechStack>
+  <Badge>Tauri</Badge>
+  <Badge>Rust</Badge>
+  <Badge>React</Badge>
+  <Badge>TypeScript</Badge>
+  <Badge>Android SDK</Badge>
+  <Badge>Android Emulator</Badge>
+  <Badge>AVD</Badge>
+  <Badge>React Native</Badge>
+  <Badge>Expo</Badge>
+  <Badge>MCP</Badge>
+  <Badge>AI Coding Agents</Badge>
+</TechStack>
+
+
+## Roadmap
+
+Potential future capabilities include:
+
+* Automated APK installation
+* Improved screenshot inspection
+* Logcat integration
+* CPU and RAM monitoring
+* Network inspection
+* Automated Expo project detection
+* One-command project launch
+* Emulator snapshots
+* Multiple emulator management
+* Agent-driven UI testing
+* Automated visual regression checks
+* Device interaction APIs
+* Faster cold boot and snapshot restoration
+* Remote emulator support

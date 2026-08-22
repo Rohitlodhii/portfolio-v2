@@ -124,7 +124,7 @@ export function Terminal({
           mode ? "rounded-tl-none" : ""
         }`}
       >
-        <pre className="overflow-x-auto font-mono text-[12px] leading-6 text-neutral-800">
+        <pre className="overflow-x-auto font-mono text-[12px] leading-6 text-foreground/85">
           <span>{currentCommand}</span>
         </pre>
 
@@ -137,7 +137,7 @@ export function Terminal({
           className={`shrink-0 select-none rounded-md px-2.5 py-1 text-xs normal-case tracking-normal transition-colors cursor-pointer ${
             copied
               ? "bg-emerald-500/15 text-emerald-500 font-medium"
-              : "text-zinc-400 hover:bg-background hover:text-neutral-900"
+              : "text-muted-foreground hover:bg-background hover:text-foreground"
           }`}
         >
           {copied ? "Copied" : "Copy"}

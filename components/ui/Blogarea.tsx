@@ -28,8 +28,8 @@ export function Blogarea({ posts }: { posts: BlogAreaPost[] }) {
   if (posts.length === 0) return null
 
   return (
-    <section className="pt-14">
-      <div className="text-muted-foreground text-sm font-medium">Blogs</div>
+    <section className="pt-4">
+      <div className="text-muted-foreground text-sm font-medium pb-2 ">Blogs</div>
       <Seprator />
       {/* Clearing on the list rather than per row means crossing a separator
           doesn't blink the highlight out and back. */}
@@ -39,7 +39,7 @@ export function Blogarea({ posts }: { posts: BlogAreaPost[] }) {
             <Link
               href={`/blogs/${post.slug}`}
               onMouseEnter={() => setHoveredId(post.slug)}
-              className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4 group px-2 py-2.5 rounded-lg cursor-pointer"
+              className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4 group px-1 py-2.5 rounded-lg cursor-pointer"
             >
               {hoveredId === post.slug && (
                 <motion.span

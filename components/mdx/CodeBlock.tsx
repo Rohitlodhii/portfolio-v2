@@ -21,7 +21,7 @@ export function CodeBlock({ children }: { children?: ReactNode }) {
 
   return (
     <div className="group relative my-6 overflow-hidden rounded-xl bg-secondary">
-      <div className="flex items-center justify-between border-b border-white/10 px-4 py-4 text-[10px] font-medium uppercase tracking-wider text-zinc-500">
+      <div className="flex items-center justify-between border-b border-border px-4 py-4 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
         <span className="lowercase">{language || "code"}</span>
 
         <motion.button
@@ -32,13 +32,13 @@ export function CodeBlock({ children }: { children?: ReactNode }) {
           className={`select-none rounded-md px-2 py-1 normal-case tracking-normal transition-colors cursor-pointer ${
             copied
               ? "bg-emerald-500/15 text-emerald-500 font-medium"
-              : "text-zinc-400 hover:bg-background hover:text-neutral-900"
+              : "text-muted-foreground hover:bg-background hover:text-foreground"
           }`}
         >
           {copied ? "Copied" : "Copy"}
         </motion.button>
       </div>
-      <pre ref={codeRef} className="overflow-x-auto p-4 text-[12px] leading-6 text-neutral-700">
+      <pre ref={codeRef} className="overflow-x-auto p-4 text-[12px] leading-6 text-foreground/80">
         {children}
       </pre>
     </div>

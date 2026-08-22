@@ -1,0 +1,727 @@
+---
+title: opengg
+lastupdated: 2026-08-12
+link: https://opengg.vercel.app
+videolink: https://youtu.be/C4VgW20stw0
+smalldesc: Open-source Open Graph image creator for generating dynamic, customizable social preview images from reusable templates. Designed for developers, websites, and AI-assisted workflows that need programmatic OG image generation without manually designing every image.
+---
+
+
+# OpenGG
+
+<p>
+OpenGG is an <b>open-source Open Graph image creator</b> for generating beautiful, dynamic
+social preview images for websites, blogs, products, documentation, and applications.
+</p>
+
+<p>
+Instead of manually creating a separate image for every page, OpenGG lets developers define
+reusable templates and dynamically generate an image from structured data such as a title,
+description, author, logo, and other metadata.
+</p>
+
+---
+
+## Why OpenGG?
+
+<p>
+Every shareable webpage needs a good social preview, but creating and maintaining thousands
+of static OG images quickly becomes tedious.
+</p>
+
+A typical workflow looks like:
+
+```text
+Create page
+   ↓
+Open Figma
+   ↓
+Design OG image
+   ↓
+Export PNG
+   ↓
+Upload image
+   ↓
+Add metadata
+   ↓
+Repeat for every page
+```
+
+OpenGG turns this into:
+
+```text
+Template
+   +
+Structured Data
+   ↓
+OpenGG
+   ↓
+Generated OG Image
+```
+
+This makes Open Graph images a part of the application's data pipeline instead of a manual
+design task.
+
+---
+
+## Features
+
+* **Template-based generation** — create reusable OG image designs
+* **Dynamic data** — inject titles, descriptions, authors, images, and metadata
+* **Developer-first** — designed for integration into modern web applications
+* **Programmatic rendering** — generate images from structured input
+* **Custom layouts** — control typography, spacing, positioning, and visual elements
+* **Reusable templates** — use the same design across hundreds or thousands of pages
+* **Open source** — self-host and customize the generation pipeline
+* **API-friendly** — designed to work as an image-generation service
+* **Framework-friendly** — suitable for blogs, SaaS products, documentation, portfolios,
+  and content platforms
+* **AI-friendly** — structured templates make OG generation easy for coding agents to automate
+
+---
+
+## How It Works
+
+OpenGG separates the **design** from the **content**.
+
+```text
+                Template
+                   │
+                   │
+                   ▼
+             ┌───────────┐
+             │   OpenGG   │
+             │  Renderer  │
+             └─────┬─────┘
+                   │
+        ┌──────────┼──────────┐
+        │          │          │
+      Title      Author      Image
+        │          │          │
+        └──────────┼──────────┘
+                   │
+                   ▼
+              OG Image
+                   │
+                   ▼
+             Social Preview
+```
+
+For example, a template can define:
+
+```json
+{
+  "title": "Building Fast Backends",
+  "author": "Rohit Lodhi",
+  "category": "Engineering",
+  "image": "/avatar.png"
+}
+```
+
+OpenGG renders this data into the final social preview image.
+
+---
+
+## Template System
+
+<p>
+The core idea behind OpenGG is that a template describes <b>how an image should look</b>,
+while input data describes <b>what the image should contain</b>.
+</p>
+
+A conceptual template might contain:
+
+```text
+┌─────────────────────────────────────────────┐
+│                                             │
+│  ENGINEERING                                │
+│                                             │
+│  Building Fast Backends                     │
+│  with Node.js                               │
+│                                             │
+│                                             │
+│  Rohit Lodhi                    openGG      │
+│                                             │
+└─────────────────────────────────────────────┘
+```
+
+The same template can then generate:
+
+```text
+Building Fast Backends
+Building Scalable APIs
+Understanding Database Migrations
+Designing Distributed Systems
+```
+
+without creating four separate designs.
+
+---
+
+## Dynamic OG Generation
+
+OpenGG can be integrated directly into a website's metadata pipeline.
+
+For example:
+
+```text
+/blog/database-migrations
+        │
+        ▼
+Fetch blog metadata
+        │
+        ▼
+OpenGG
+        │
+        ▼
+Generate OG image
+        │
+        ▼
+og:image
+```
+
+The page can then expose the generated image through its Open Graph metadata:
+
+```html
+<meta
+  property="og:image"
+  content="https://example.com/og/database-migrations.png"
+/>
+```
+
+This makes OG generation automatic as new content is published.
+
+---
+
+## Rendering Pipeline
+
+A typical OpenGG rendering pipeline can be represented as:
+
+```text
+Template Definition
+        ↓
+Parse Template
+        ↓
+Load Assets
+        ↓
+Resolve Dynamic Variables
+        ↓
+Layout
+        ↓
+Render Text / Images / Shapes
+        ↓
+Rasterize
+        ↓
+PNG / Image Output
+```
+
+The renderer is responsible for converting a declarative template into a final image.
+
+---
+
+## Template Variables
+
+Templates can expose variables that are populated when the image is generated.
+
+For example:
+
+```text
+{{title}}
+{{description}}
+{{author}}
+{{avatar}}
+{{logo}}
+{{category}}
+{{date}}
+```
+
+A template might define:
+
+```text
+Title:
+{{title}}
+
+Author:
+{{author}}
+
+Category:
+{{category}}
+```
+
+and the generation request provides:
+
+```json
+{
+  "title": "Understanding Database Migrations",
+  "author": "Rohit Lodhi",
+  "category": "Backend Engineering"
+}
+```
+
+The renderer resolves the variables before producing the final image.
+
+---
+
+## Developer Workflow
+
+A typical developer workflow looks like:
+
+### 1. Create a template
+
+```text
+Create OG template
+        ↓
+Define layout
+        ↓
+Add typography
+        ↓
+Add dynamic fields
+```
+
+### 2. Preview the template
+
+```text
+Template
+   ↓
+Sample data
+   ↓
+Preview
+```
+
+### 3. Publish the template
+
+```text
+Template
+   ↓
+Save / publish
+   ↓
+Reusable OG design
+```
+
+### 4. Generate images
+
+```text
+Page metadata
+      ↓
+OpenGG
+      ↓
+PNG
+```
+
+### 5. Use the generated image
+
+```text
+Generated image URL
+        ↓
+og:image
+        ↓
+Twitter / X
+LinkedIn
+Discord
+Facebook
+Slack
+etc.
+```
+
+---
+
+## API
+
+OpenGG can expose image generation through an HTTP API.
+
+A conceptual request could look like:
+
+```http
+POST /api/generate
+Content-Type: application/json
+```
+
+```json
+{
+  "template": "blog-post",
+  "data": {
+    "title": "Building a Production API",
+    "author": "Rohit Lodhi",
+    "category": "Backend"
+  }
+}
+```
+
+The service returns the generated image or an image URL.
+
+---
+
+## Example Integration
+
+A website could generate OG images based on its route:
+
+```text
+/blog/[slug]
+       │
+       ▼
+Fetch post
+       │
+       ├── title
+       ├── author
+       ├── description
+       └── cover
+       │
+       ▼
+OpenGG
+       │
+       ▼
+/og/[slug].png
+```
+
+The same mechanism can be used for:
+
+* Blog posts
+* Documentation pages
+* Product pages
+* GitHub projects
+* Portfolio projects
+* User profiles
+* Changelogs
+* Announcements
+* Marketing pages
+* Event pages
+
+---
+
+## Image Formats
+
+The primary output is intended for social preview images, typically using:
+
+```text
+1200 × 630
+```
+
+This is suitable for common Open Graph implementations.
+
+Other dimensions can be supported for different use cases such as:
+
+```text
+1200 × 630     Open Graph
+1280 × 720     Video / presentation preview
+1200 × 675     Social cards
+1080 × 1080    Square social graphics
+```
+
+The exact output dimensions should be configurable by the template or generation request.
+
+---
+
+## Rendering Technology
+
+OpenGG can use a programmatic rendering pipeline rather than requiring a browser-based
+design editor for every generated image.
+
+A possible architecture is:
+
+```text
+Template
+   ↓
+Template Parser
+   ↓
+Layout Engine
+   ↓
+Text Measurement
+   ↓
+Asset Resolver
+   ↓
+Renderer
+   ↓
+PNG Encoder
+```
+
+Possible rendering technologies include:
+
+* Satori
+* SVG
+* Canvas
+* Sharp
+* Puppeteer
+* Browser-based rendering
+
+The rendering backend can be swapped depending on deployment requirements and the complexity
+of the templates.
+
+---
+
+## Architecture
+
+A production deployment can be structured as:
+
+```text
+                    Client
+                      │
+                      ▼
+                 OpenGG API
+                      │
+          ┌───────────┼───────────┐
+          │           │           │
+          ▼           ▼           ▼
+      Templates     Assets      Metadata
+          │           │
+          └──────┬────┘
+                 ▼
+             Renderer
+                 │
+                 ▼
+             Image Output
+                 │
+                 ▼
+              Storage
+```
+
+For simple deployments, the generated image can also be returned directly from the
+generation endpoint without persistent storage.
+
+---
+
+## Caching
+
+OG images are usually deterministic.
+
+For the same:
+
+```text
+template + input data + assets
+```
+
+the generated image should generally be identical.
+
+This makes caching highly effective.
+
+```text
+Request
+  ↓
+Generate cache key
+  ↓
+Cache hit?
+ ┌───────┴───────┐
+YES              NO
+ ↓                ↓
+Return         Render image
+image             ↓
+                  Cache
+                   ↓
+                Return
+```
+
+A production implementation can use:
+
+* CDN caching
+* Object storage
+* Redis
+* HTTP cache headers
+* Content-addressed filenames
+
+---
+
+## AI Coding Agents
+
+<p>
+OpenGG is also useful in AI-assisted development because OG images are highly structured.
+An AI coding agent can generate or update an OG template without manually operating a
+graphics editor.
+</p>
+
+For example:
+
+```text
+User:
+Create an OG image for my new blog.
+
+        ↓
+
+AI Agent
+        ↓
+Read blog metadata
+        ↓
+Select OpenGG template
+        ↓
+Populate template variables
+        ↓
+Generate image
+        ↓
+Update page metadata
+```
+
+An agent can also modify the template itself:
+
+```text
+"Make the title larger."
+
+        ↓
+
+Identify template
+        ↓
+Change typography
+        ↓
+Regenerate preview
+        ↓
+Inspect result
+        ↓
+Commit change
+```
+
+This makes OG design part of the normal software-development workflow.
+
+---
+
+## Open Source
+
+<p>
+OpenGG is intended to be self-hostable and extensible. Developers can run their own
+generation infrastructure instead of depending entirely on a third-party OG image service.
+</p>
+
+This makes it suitable for:
+
+* Personal projects
+* SaaS applications
+* Developer tools
+* Documentation platforms
+* Blogs
+* Open-source projects
+* Internal applications
+
+---
+
+## Why OpenGG?
+
+### Developer-first
+
+OG images are treated as code and data rather than manually exported design assets.
+
+### Reusable
+
+One template can generate thousands of unique images.
+
+### Dynamic
+
+Images can be generated directly from application data.
+
+### Automatable
+
+Generation can happen automatically when content is created or updated.
+
+### Self-hostable
+
+Developers can run the rendering infrastructure themselves.
+
+### AI-friendly
+
+Structured templates are easy for coding agents to understand, modify, and generate.
+
+---
+
+## Example Use Case
+
+Imagine a blog with 500 articles.
+
+Without OpenGG:
+
+```text
+500 articles
+    ↓
+500 manually designed images
+```
+
+With OpenGG:
+
+```text
+1 OG template
+      +
+500 article records
+      ↓
+OpenGG
+      ↓
+500 generated OG images
+```
+
+When the design changes:
+
+```text
+Update template
+      ↓
+Regenerate images
+      ↓
+All articles use the new design
+```
+
+This is the central value proposition of OpenGG.
+
+---
+
+## Roadmap
+
+Potential future capabilities include:
+
+* Visual drag-and-drop template editor
+* Template marketplace
+* More layout primitives
+* Custom fonts
+* SVG support
+* Image filters
+* Gradient and pattern backgrounds
+* QR-code elements
+* Dynamic charts
+* Remote asset loading
+* CDN integration
+* Automatic OG generation for Git repositories
+* Framework integrations
+* Next.js integration
+* Vite integration
+* CLI
+* REST API
+* Webhooks
+* Batch image generation
+* Template versioning
+* AI-assisted template generation
+* Browser-based template preview
+* Image generation playground
+
+---
+
+## Technology
+
+<TechStack>
+  <Badge>TypeScript</Badge>
+  <Badge>React</Badge>
+  <Badge>Next.js</Badge>
+  <Badge>SVG</Badge>
+  <Badge>Satori</Badge>
+  <Badge>Sharp</Badge>
+  <Badge>Open Graph</Badge>
+  <Badge>REST API</Badge>
+  <Badge>CDN</Badge>
+  <Badge>AI Coding Agents</Badge>
+</TechStack>
+
+---
+
+## Project Vision
+
+<p>
+OpenGG aims to make social preview images behave like any other generated application
+asset: <b>defined once, populated with data, rendered automatically, and delivered
+programmatically.</b>
+</p>
+
+```text
+Design once
+    ↓
+Define template
+    ↓
+Connect application data
+    ↓
+Generate automatically
+    ↓
+Share everywhere
+```
+
+OpenGG turns Open Graph image creation from a repetitive design task into a programmable
+part of the web development stack.
+----------------------------------

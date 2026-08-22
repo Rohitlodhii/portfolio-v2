@@ -28,7 +28,8 @@ export default async function ProjectPage({
   const { content } = await compileMDX({
     source: project.content,
     components: mdxComponents,
-    options: { mdxOptions: { rehypePlugins: [rehypeHighlight] } },
+    // MDX is first-party repo content; allow JSX expression props (e.g. <Table rows={[...]} />)
+    options: { blockJS: false, mdxOptions: { rehypePlugins: [rehypeHighlight] } },
   });
 
   return (

@@ -4,16 +4,18 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "motion/react";
-import { IconHome, IconBook, IconChevronUp, Icon3dCubeSphere, IconSun, IconDotsVertical } from "@tabler/icons-react";
+import { IconHome, IconBook, IconChevronUp, IconSettings } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { useHaptics } from "@/lib/use-haptics";
+import { useTheme } from "@/lib/use-theme";
 
 
 interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   href: string;
-  /** Blog posts live under /blogs/[blogid], so this can't be plain equality. */
+  /** Detail pages live under /blogs/[blogid] and /project/[projectname], so this
+      can't be plain equality. */
   match: (pathname: string) => boolean;
 }
 
@@ -81,12 +83,49 @@ function useScrollProgress() {
   return progress;
 }
 
+/** One row of the expanded settings tray: a label and a sliding pill switch. */
+function SettingSwitch({
+  label,
+  checked,
+  onToggle,
+}: {
+  label: string;
+  checked: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-between px-2 py-1.5">
+      <h2 className="text-sm text-muted-foreground">{label}</h2>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        aria-label={label}
+        onClick={onToggle}
+        className="bg-background/60 w-16 rounded-lg h-6 p-0.5 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-blue-300/60"
+      >
+        {/* x is a % of the thumb's own width, and the thumb is
+            half the track, so 100% lands it flush on the right. */}
+        <motion.div
+          animate={{ x: checked ? "100%" : "0%" }}
+          transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.6 }}
+          className={cn(
+            "h-full w-1/2 rounded-md transition-colors duration-200",
+            checked ? "bg-blue-300" : "bg-foreground/20"
+          )}
+        />
+      </button>
+    </div>
+  );
+}
+
 export function NewDock() {
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
   const scrollProgress = useScrollProgress();
-  
+
   const { trigger, isEnabled: hapticsEnabled, setEnabled: setHapticsEnabled } = useHaptics();
+  const { isDark, setDark } = useTheme();
 
   const toggleHaptics = () => {
     const next = !hapticsEnabled;
@@ -95,8 +134,13 @@ export function NewDock() {
     if (next) trigger("selection");
   };
 
+  const toggleNightMode = () => {
+    setDark(!isDark);
+    trigger("selection");
+  };
 
-    
+
+
   // Dash pattern of C draws the whole circle at offset 0 and none of it at offset C.
   const ringOffset = useTransform(scrollProgress, (value) => RING_LENGTH * (1 - value));
 
@@ -104,8 +148,8 @@ export function NewDock() {
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
       <motion.div
         animate={{
-          width: isExpanded ? 256 : 172,
-          height: isExpanded ? 176 : 48,
+          width: isExpanded ? 256 : 174,
+          height: isExpanded ? 152 : 48,
           borderRadius: isExpanded ? 28 : 24,
         }}
         transition={{
@@ -113,7 +157,7 @@ export function NewDock() {
           stiffness: 220,
           damping: 26,
         }}
-        className="relative flex flex-col justify-end bg-white/10 dark:bg-black/35 backdrop-blur-xl border border-white/20 dark:border-white/10 p-1 shadow-[inset_1px_1px_1px_rgba(255,255,255,0.6),inset_-1px_-1px_1px_rgba(255,255,255,0.6),0_12px_40px_rgba(0,0,0,0.12)] select-none overflow-hidden"
+       className="relative flex flex-col justify-end bg-white/10 dark:bg-black/35 backdrop-blur-sm border border-white/20 dark:border-neutral-800 p-1 shadow-[inset_1px_1px_1px_rgba(255,255,255,0.6),inset_-1px_-1px_1px_rgba(255,255,255,0.6),0_12px_40px_rgba(0,0,0,0.12)] dark:shadow-[inset_1px_1px_1px_rgba(255,255,255,0.1),inset_-1px_-1px_1px_rgba(255,255,255,0.1),0_12px_40px_rgba(0,0,0,0.5)] select-none overflow-hidden"
         style={{ transformOrigin: "center bottom" }}
       >
         <AnimatePresence>
@@ -125,41 +169,23 @@ export function NewDock() {
               transition={{ duration: 0.2 }}
               className="flex-1 w-full flex flex-col justify-center items-center gap-3 px-1 pb-2 pt-1"
             >
-              <div className="w-full h-full bg-border rounded-2xl flex gap-1 p-1">
-                <div className="flex flex-col w-full gap-1">
-                  <div className="w-full h-full  backdrop-blur-lg rounded-xl">
-                    <div className="flex items-center justify-between p-2">
-                        <h2 className="text-sm text-muted-foreground ">Web Haptics</h2>
-                        <button
-                          type="button"
-                          role="switch"
-                          aria-checked={hapticsEnabled}
-                          aria-label="Web haptics"
-                          onClick={toggleHaptics}
-                          className="bg-background/60 w-16 rounded-lg h-6 p-0.5 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-blue-300/60"
-                        >
-                            {/* x is a % of the thumb's own width, and the thumb is
-                                half the track, so 100% lands it flush on the right. */}
-                            <motion.div
-                              animate={{ x: hapticsEnabled ? "100%" : "0%" }}
-                              transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.6 }}
-                              className={cn(
-                                "h-full w-1/2 rounded-md transition-colors duration-200",
-                                hapticsEnabled ? "bg-blue-300" : "bg-foreground/20"
-                              )}
-                            />
-                        </button>
-                    </div>
-                  </div>
-
-                </div>
-
+              <div className="w-full h-full bg-border rounded-2xl flex flex-col justify-center gap-1 p-1">
+                <SettingSwitch
+                  label="Web Haptics"
+                  checked={hapticsEnabled}
+                  onToggle={toggleHaptics}
+                />
+                <SettingSwitch label="Night Mode" checked={isDark} onToggle={toggleNightMode} />
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Bottom controls row (remains at original place, centered with mx-auto) */}
+        {/* Bottom controls row (remains at original place, centered with mx-auto).
+            164px = two 40px icons + one 4px gap, then a 4px gap and the 76px
+            control group. The collapsed width above (174) is exactly this plus
+            p-1 (8px) and the 1px border on each side, since the inline width is
+            a border-box value. */}
         <div className="flex items-center gap-1 w-[164px] mx-auto h-10 shrink-0">
           <div className="flex items-center gap-1 shrink-0">
             {navItems.map((item) => {
@@ -175,13 +201,13 @@ export function NewDock() {
                   className="group relative select-none outline-none touch-manipulation"
                 >
                   <motion.div
-                    whileHover={{ scale: 1.08 }}
+
                     whileTap={{ scale: 0.94 }}
                     transition={{ type: "spring", stiffness: 450, damping: 16 }}
                     className={cn(
-                      "relative size-10 rounded-full flex items-center justify-center transition-all cursor-pointer select-none",
+                      "relative size-10 rounded-full flex items-center justify-center transition-colors cursor-pointer select-none mt-0.5",
                       isActive
-                        ? "bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 border-t-white/40 dark:border-t-white/20 border-b-black/20 dark:border-b-black/40 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_rgba(0,0,0,0.08)] text-orange-200"
+                        ? "bg-white/10 dark:bg-white/10 border border-black/10 dark:border-white/20 backdrop-blur-xl shadow-md dark:shadow-lg dark:shadow-black/40 text-orange-200"
                         : "text-muted-foreground hover:text-foreground border border-transparent"
                     )}
                   >
@@ -207,7 +233,7 @@ export function NewDock() {
             })}
           </div>
 
-          <div className="h-10 flex items-center justify-center w-[76px] gap-1 bg-border/70 backdrop-blur-lg rounded-full p-1 shrink-0">
+          <div className="h-10 flex items-center justify-center w-[76px] gap-1 bg-border/70 dark:bg-border/90 backdrop-blur-lg rounded-full p-1 shrink-0">
             <button
               onClick={() => setIsExpanded((prev) => !prev)}
               aria-label="Toggle settings panel"
@@ -223,8 +249,8 @@ export function NewDock() {
                   ])
                   }
               >
-              
-                <IconChevronUp className="size-4 text-muted-foreground" />
+
+                <IconSettings className="size-4 text-muted-foreground" />
               </motion.div>
             </button>
             {/* Scroll progress for the current route. Not a control, so it's a div

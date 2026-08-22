@@ -58,10 +58,21 @@ async function findMdxFiles(directory: string): Promise<string[]> {
   return files.flat();
 }
 
+/**
+ * Reads one file, or `null` when its frontmatter is incomplete.
+ *
+ * Deliberately doesn't throw: `listMdxFiles` parses the whole directory, and
+ * every page that resolves a single project goes through it, so a half-written
+ * draft would otherwise 500 all of them rather than just its own route.
+ */
 function parseMdx(source: string) {
   const parsed = matter(source);
+  const frontmatter = mdxFrontmatterSchema.safeParse(parsed.data);
+
+  if (!frontmatter.success) return null;
+
   return {
-    frontmatter: mdxFrontmatterSchema.parse(parsed.data),
+    frontmatter: frontmatter.data,
     content: parsed.content.trim(),
   };
 }
@@ -70,22 +81,47 @@ function serializeMdx(input: MdxInput) {
   return matter.stringify(input.content, input.frontmatter);
 }
 
-export async function listMdxFiles() {
+/**
+ * Every `.mdx` on disk, whether or not its frontmatter parses.
+ *
+ * "Does this name already exist" is a question about the filesystem, so it has
+ * to be asked here rather than of `listMdxFiles`, which drops unparseable
+ * drafts — otherwise creating a file could silently overwrite one.
+ */
+async function listMdxPaths() {
   await fs.mkdir(mdxRoot, { recursive: true });
   const files = await findMdxFiles(mdxRoot);
 
-  return Promise.all(
-    files.map(async (file) => ({
-      folder: path.relative(mdxRoot, path.dirname(file)).replaceAll(path.sep, "/"),
-      name: path.basename(file),
-      ...parseMdx(await fs.readFile(file, "utf8")),
-    })),
+  return files.map((file) => ({
+    file,
+    folder: path.relative(mdxRoot, path.dirname(file)).replaceAll(path.sep, "/"),
+    name: path.basename(file),
+  }));
+}
+
+export async function listMdxFiles() {
+  const entries = await listMdxPaths();
+
+  const parsed = await Promise.all(
+    entries.map(async ({ file, folder, name }) => {
+      const mdx = parseMdx(await fs.readFile(file, "utf8"));
+
+      if (!mdx) {
+        // Loud enough to notice while writing, quiet enough not to break the page.
+        console.warn(`[mdx] skipped ${path.relative(mdxRoot, file)}: frontmatter is missing or incomplete`);
+        return null;
+      }
+
+      return { folder, name, ...mdx };
+    }),
   );
+
+  return parsed.filter((entry) => entry !== null);
 }
 
 export async function createMdx(input: MdxInput) {
   const target = filePath(input.folder, input.name);
-  const files = await listMdxFiles();
+  const files = await listMdxPaths();
 
   if (files.some((file) => file.name === input.name)) {
     throw new Error("An MDX file with this name already exists");
@@ -99,7 +135,7 @@ export async function createMdx(input: MdxInput) {
 export async function updateMdx(currentFolder: string, currentName: string, input: MdxInput) {
   const currentPath = filePath(currentFolder, currentName);
   const target = filePath(input.folder, input.name);
-  const files = await listMdxFiles();
+  const files = await listMdxPaths();
 
   if (!files.some((file) => file.folder === currentFolder && file.name === currentName)) {
     throw new Error("MDX file not found");

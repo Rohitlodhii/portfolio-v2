@@ -4,6 +4,7 @@ import React, { Fragment, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'motion/react'
 import { formatBlogDateLong } from '@/lib/blog-utils'
+import { IconStar } from '@tabler/icons-react'
 
 export const Seprator = () => {
   return <div className="h-[1px] w-full my-0.5 bg-secondary" />
@@ -27,15 +28,16 @@ export function BlogList({ posts }: { posts: any[] }) {
 
               <Link
                 href={`/blogs/${post.slug}`}
-                className="group flex flex-col rounded-xl bg-blue-300 transition-all"
+                className="group flex flex-col  rounded-xl  transition-all"
               >
                 {/* Top Bar: Latest Post Header */}
-                <div className="px-3 py-1 flex items-center gap-1.5 text-[11px] sm:text-xs font-medium text-orange-950/80 w-full">
+                <div className="px-4 py-0.5 flex items-center gap-1.5 text-[12px] text-base font-medium  bg-blue-400 max-w-fit rounded-t-xl text-white border border-border border-b-0 ">
+
                   <span>Latest Post</span>
                 </div>
 
                 {/* Inner Card Box */}
-                <div className="flex flex-col w-full gap-6 rounded-xl border border-border bg-background p-2 pb-2 md:pb-2">
+                <div className="flex flex-col w-full gap-6 rounded-xl rounded-tl-none border border-border bg-background p-2 pb-2 md:pb-2">
                   {/* Title, Summary, Date & Read Time, Tags */}
                   <div className="flex flex-col justify-between gap-6 px-1">
                     <div className="flex flex-col gap-1">

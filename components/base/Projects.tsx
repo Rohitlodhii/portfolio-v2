@@ -1,9 +1,12 @@
 "use client"
 import { IconArrowUpRight } from '@tabler/icons-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import React, { Fragment, useState } from 'react'
 import { motion, AnimatePresence, useMotionValue } from 'motion/react'
 import { projectType } from '@/config/data/files.schema'
+import { slugifyHeading } from '@/lib/mdx-headings'
+import { cn } from '@/lib/utils'
 
 
 export const Seprator = () => {
@@ -12,8 +15,27 @@ export const Seprator = () => {
     )
 }
 
+/**
+ * `projects.json` carries no slug of its own — the MDX case studies in
+ * `config/data/mdx` are named after the title, so `Radian` resolves to
+ * `radian.mdx` through `/project/radian`.
+ */
+const caseStudyHref = (title: string) => `/project/${slugifyHeading(title).replace(/^-|-$/g, '')}`
 
-const ProjectsPage = ({ data }: { data: projectType[] }) => {
+/** `projects.json` stores bare hosts, so the protocol has to be added back. */
+const liveSiteHref = (url: string) => (url.startsWith('http') ? url : `https://${url}`)
+
+
+const ProjectsPage = ({
+  data,
+  heading = 'Projects',
+  className,
+}: {
+  data: projectType[]
+  /** `null` on `/project`, which supplies its own "All Projects" heading. */
+  heading?: string | null
+  className?: string
+}) => {
   const [hoveredId, setHoveredId] = useState<number | null>(null)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -30,21 +52,25 @@ const ProjectsPage = ({ data }: { data: projectType[] }) => {
   }
 
   return (
-    <section className="pt-14">
-        <div className="text-muted-foreground text-sm font-medium">
-            Projects
-        </div>
-        <Seprator/>
+    <section className={cn('pt-4', className)}>
+        {heading && (
+          <>
+            <div className="text-muted-foreground text-sm font-medium">
+                {heading}
+            </div>
+            <Seprator/>
+          </>
+        )}
         <div className="flex flex-col" onMouseLeave={() => setHoveredId(null)}>
             {data.map((project) => (
                 <Fragment key={project.id}>
-                <a
-                    href={project.url.startsWith('http') ? project.url : `https://${project.url}`}
-                    target="_blank"
-                    rel="noreferrer"
+                {/* A div rather than an anchor: the row opens the case study while
+                    the arrow opens the live site, and an <a> nested in an <a> is
+                    invalid HTML. The two links are layered by z-index below. */}
+                <div
                     onMouseEnter={(e) => handleMouseEnter(e, project.id)}
                     onMouseMove={handleMouseMove}
-                    className="relative flex group px-1 py-1 rounded-lg items-center cursor-pointer justify-between"
+                    className="relative flex px-1 py-1 rounded-lg items-center justify-between"
                 >
                     {hoveredId === project.id && (
                         <motion.span
@@ -79,7 +105,15 @@ const ProjectsPage = ({ data }: { data: projectType[] }) => {
                             </motion.div>
                         )}
                     </AnimatePresence>
-                    <div className="flex gap-4 items-center relative z-10">
+                    {/* Stretched over the whole row so the labels stay clickable
+                        without wrapping them, at z-10 — above the content, below
+                        the arrow. */}
+                    <Link
+                        href={caseStudyHref(project.title)}
+                        aria-label={`${project.title} case study`}
+                        className="absolute inset-0 z-10 rounded-lg cursor-pointer"
+                    />
+                    <div className="flex gap-4 items-center relative z-0">
                         <Image
                             src={`/icons/${project.logo}`}
                             height={25}
@@ -97,14 +131,20 @@ const ProjectsPage = ({ data }: { data: projectType[] }) => {
                                 : 'text-primary'
                         }`}>{project.title}</h2>
                     </div>
-                    <div className="text-sm text-muted-foreground flex items-center gap-2 relative z-10">
+                    <div className="text-sm text-muted-foreground flex items-center gap-2 relative z-0">
                         <p>{project.date}</p>
-                        <p className="p-1 hover:bg-white group rounded-lg transition ease-in ">
+                        <a
+                            href={liveSiteHref(project.url)}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label={`Open the ${project.title} site`}
+                            className="relative z-20 p-1 hover:bg-white dark:hover:bg-white/10 group rounded-lg transition ease-in "
+                        >
 
-                        <IconArrowUpRight className="size-5 font-medium transition group-hover:text-black ease-in group-hover:rotate-45 "/>
-                        </p>
+                        <IconArrowUpRight className="size-5 font-medium transition group-hover:text-black dark:group-hover:text-white ease-in group-hover:rotate-45 "/>
+                        </a>
                     </div>
-                </a>
+                </div>
                 <Seprator/>
 
                 </Fragment>
@@ -115,4 +155,3 @@ const ProjectsPage = ({ data }: { data: projectType[] }) => {
 }
 
 export default ProjectsPage
-
