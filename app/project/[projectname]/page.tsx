@@ -77,9 +77,9 @@ export default async function ProjectPage({
               <p className="text-sm font-medium">{project.frontmatter.smalldesc}</p>
             </header>
 
-            {project.frontmatter.videolink && (
+            {typeof project.frontmatter.videolink === "string" && project.frontmatter.videolink.trim().length > 0 && (
               <div className="w-full">
-                <CustomVideoPlayer url={project.frontmatter.videolink} title={project.frontmatter.title} />
+                <CustomVideoPlayer url={project.frontmatter.videolink.trim()} title={project.frontmatter.title} />
               </div>
             )}
 

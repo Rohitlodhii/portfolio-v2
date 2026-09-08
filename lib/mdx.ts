@@ -21,7 +21,10 @@ export const mdxFrontmatterSchema = z.object({
   title: z.string().min(1),
   lastupdated: z.preprocess((value) => value instanceof Date ? value.toISOString().slice(0, 10) : value, z.string().min(1)),
   link: z.string().min(1),
-  videolink: z.string().min(1),
+  videolink: z.preprocess(
+    (v) => (v == null ? "" : typeof v === "string" ? v.trim() : String(v).trim()),
+    z.string().optional().default(""),
+  ),
   smalldesc: z.string().min(1),
 });
 

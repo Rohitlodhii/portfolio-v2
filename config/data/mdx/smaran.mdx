@@ -1,0 +1,110 @@
+---
+title: Notion Clone
+lastupdated: 2026-09-08
+link: https://github.com/Rohitlodhii/notionclone
+videolink:
+smalldesc: A full-stack Notion-inspired workspace built with Next.js, featuring a rich block-based editor, authentication, document management, file uploads, and AI-powered functionality.
+---
+
+
+<p>
+Notion Clone is a full-stack productivity workspace inspired by <b>Notion</b>. I built it as an early full-stack project while experimenting with modern React frameworks, real-time application architecture, rich-text editing, authentication, file storage, and generative AI.
+</p>
+
+<p>
+The application provides a document-centric workspace where users can create and organize pages using a rich block-based editor, with authentication, persistent data, file uploads, and additional productivity-focused features.
+</p>
+
+---
+
+## Features
+
+### Block-Based Editor
+
+<p>
+The core editing experience is powered by <b>BlockNote</b>, providing a flexible block-based editor similar to the editing model used by Notion.
+</p>
+
+Users can work with structured content rather than a simple textarea, making pages easier to compose and organize.
+
+### Authentication
+
+<p>
+User authentication and account management are handled through <b>Clerk</b>, allowing the application to maintain user-specific workspaces and documents.
+</p>
+
+### Document Workspace
+
+<p>
+The application is designed around a document-first workflow where users can create and manage pages inside their workspace rather than treating every page as a standalone form.
+</p>
+
+### File Uploads
+
+<p>
+File handling is integrated using <b>EdgeStore</b>, allowing uploaded assets to be managed alongside document content.
+</p>
+
+### AI Integration
+
+<p>
+The project also integrates <b>Google Generative AI</b>, making the workspace extensible with AI-assisted functionality inside the productivity application.
+</p>
+
+### State Management
+
+<p>
+Client-side state is handled with <b>Zustand</b> where application-level state needs to be shared across components.
+</p>
+
+---
+
+## Architecture
+
+<p>
+The project uses <b>Next.js 14</b> as the main application framework, combining the frontend and server-side application layer in a single codebase.
+</p>
+
+<p>
+The application combines several services and libraries to provide the complete workspace experience:
+</p>
+
+* <b>Next.js</b> — application framework
+* <b>BlockNote</b> — block-based document editor
+* <b>Clerk</b> — authentication and user management
+* <b>Convex</b> — backend database and application data layer
+* <b>EdgeStore</b> — file and asset storage
+* <b>Google Generative AI</b> — AI functionality
+* <b>Zustand</b> — client-side state management
+* <b>Tailwind CSS</b> — styling and UI
+* <b>Framer Motion</b> — UI animations
+
+---
+
+## What I learned
+
+<p>
+This was one of my earlier projects where I explored how a modern full-stack SaaS-style application is structured. Building a Notion-like editor introduced me to problems beyond basic CRUD applications, particularly around rich text editing, application state, authentication, document persistence, and integrating external services.
+</p>
+
+<p>
+It also gave me an early hands-on experience with integrating <b>generative AI</b> into an application instead of treating AI as a completely separate service.
+</p>
+
+---
+
+## Technology
+
+<TechStack>
+  <Badge>Next.js</Badge>
+  <Badge>React</Badge>
+  <Badge>TypeScript</Badge>
+  <Badge>BlockNote</Badge>
+  <Badge>Clerk</Badge>
+  <Badge>Convex</Badge>
+  <Badge>EdgeStore</Badge>
+  <Badge>Google Generative AI</Badge>
+  <Badge>Zustand</Badge>
+  <Badge>Tailwind CSS</Badge>
+  <Badge>Framer Motion</Badge>
+</TechStack>

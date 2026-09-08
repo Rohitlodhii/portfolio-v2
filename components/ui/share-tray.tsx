@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { IconQrcode, IconDownload, IconCopy, IconCheck, IconX } from "@tabler/icons-react"
 
-const PROFILE_URL = "https://github.com/rohitlodhii"
+const PROFILE_URL = "https://rohitlodhi.in"
 
 export function ShareProfileButton() {
   const [open, setOpen] = useState(false)
