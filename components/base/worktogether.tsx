@@ -1,8 +1,8 @@
 "use client"
 
-import { motion } from "motion/react"
+import { motion, AnimatePresence } from "motion/react"
 import React, { useEffect, useMemo, useRef, useState } from "react"
-import { IconBulb, IconBulbOff } from "@tabler/icons-react"
+import { IconBulb, IconBulbOff, IconX } from "@tabler/icons-react"
 import { Patrick_Hand } from "next/font/google"
 import { useHaptics } from "@/lib/use-haptics"
 
@@ -102,6 +102,7 @@ const WorkTogether = () => {
   const [isOn, setIsOn] = useState(false)
   const [containerWidth, setContainerWidth] = useState(540)
   const isMobile = useIsMobile()
+  const [preview, setPreview] = useState<FloatingIconItem | null>(null)
 
   const [setterEnabled, setSetterEnabled] = useState(false)
   const [setterMode, setSetterMode] = useState<"desktop" | "mobile">("desktop")
@@ -162,6 +163,15 @@ const WorkTogether = () => {
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    if (!preview) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setPreview(null)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [preview])
+
   const { d: wirePath, bulbs } = useMemo(() => getWireData(containerWidth), [containerWidth])
 
   return (
@@ -217,16 +227,8 @@ const WorkTogether = () => {
           />
         </div>
 
-        <motion.div
-          drag
-          dragConstraints={containerRef}
-          dragElastic={0.12}
-          dragMomentum={false}
-          whileDrag={{ scale: 1.08 }}
-          className="absolute touch-none z-40 select-none right-4 bottom-4 sm:right-10 sm:bottom-10"
-          style={{ cursor: "url('/floatingicon/cursor.svg') 0 0, url('/floatingimages/cursor.svg') 0 0, auto" }}
-        >
-          <div className="absolute right-[calc(100%+6px)] bottom-10 sm:bottom-8 pointer-events-none select-none flex flex-col items-end z-50">
+        <div className="absolute right-4 bottom-4 sm:right-10 sm:bottom-10 z-40 flex items-end gap-2 pointer-events-none">
+          <div className="pointer-events-none select-none flex flex-col items-end mb-2 mr-1">
             <span className={`${patrickHand.className} text-xs sm:text-base text-neutral-600 dark:text-neutral-300 -rotate-6 whitespace-nowrap drop-shadow-sm`}>
               click on this
             </span>
@@ -250,10 +252,10 @@ const WorkTogether = () => {
             aria-checked={isOn}
             aria-label={isOn ? "Turn fairy lights off" : "Turn fairy lights on"}
             title={isOn ? "Click to turn fairy lights off" : "Click to turn fairy lights on"}
-            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl flex items-center justify-center transition-colors duration-300 shadow-md backdrop-blur-md cursor-pointer ${
+            className={`pointer-events-auto w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl flex items-center justify-center transition-colors duration-300 shadow-md backdrop-blur-md cursor-pointer shrink-0 ${
               isOn
                 ? "bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 shadow-md"
-                : "bg-white/90 dark:bg-neutral-900/90 border border-neutral-200 dark:border-neutral-800 text-neutral-500 dark:text-neutral-400 shadow-sm"
+                : "bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-500 dark:text-neutral-400 shadow-sm"
             }`}
             style={{ rotate: "6deg" }}
           >
@@ -263,7 +265,7 @@ const WorkTogether = () => {
               <IconBulbOff className="w-5 h-5 sm:w-6 sm:h-6" />
             )}
           </motion.div>
-        </motion.div>
+        </div>
 
         {iconsToRender.map((item, idx) => {
           const left = isMobile && item.leftMobile ? item.leftMobile : item.left
@@ -272,21 +274,24 @@ const WorkTogether = () => {
             <motion.div
               key={item.src}
               data-icon-idx={idx}
-              drag={setterEnabled}
+              drag
               dragConstraints={containerRef}
               dragElastic={0.12}
               dragMomentum={false}
-              whileDrag={{ scale: 1.12 }}
+              whileDrag={{ scale: 1.12, zIndex: 30 }}
               onDragEnd={() => handleDragEnd(idx)}
-              className={`absolute touch-none z-20 ${setterEnabled ? "cursor-grab active:cursor-grabbing" : ""}`}
+              onTap={() => {
+                if (setterEnabled) return
+                setPreview(item)
+              }}
+              className="absolute z-20 cursor-grab active:cursor-grabbing touch-none"
               style={{
                 left,
                 top,
-                cursor: setterEnabled ? undefined : "url('/floatingicon/cursor.svg') 0 0, url('/floatingimages/cursor.svg') 0 0, auto",
               }}
             >
               <div
-                className={`${item.sizeClass} bg-neutral-800 dark:bg-neutral-200 p-0.5 sm:p-1 rounded-xl sm:rounded-2xl`}
+                className={`${item.sizeClass} bg-neutral-800 dark:bg-neutral-200 p-0.5 sm:p-1 rounded-xl sm:rounded-2xl pointer-events-none`}
                 style={{ rotate: `${item.rotation}deg` }}
               >
                 <div className="w-full h-full bg-neutral-800 dark:bg-neutral-200 border border-dashed border-neutral-200 dark:border-neutral-800 rounded-lg sm:rounded-xl flex items-center justify-center overflow-hidden p-0.5">
@@ -304,63 +309,66 @@ const WorkTogether = () => {
         })}
       </div>
 
+      <AnimatePresence>
+        {preview && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setPreview(null)}
+              className="fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 8 }}
+              transition={{ type: "spring", stiffness: 380, damping: 28 }}
+              className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-6 pointer-events-none"
+            >
+              <div className="pointer-events-auto relative w-full max-w-lg max-h-[85vh] bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-2xl border border-white/20 flex flex-col">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-black/5 dark:border-white/10 shrink-0">
+                  <span className="text-sm font-medium truncate pr-4">{preview.alt}</span>
+                  <button
+                    type="button"
+                    onClick={() => setPreview(null)}
+                    className="size-8 rounded-full bg-secondary hover:bg-secondary/80 flex items-center justify-center shrink-0"
+                    aria-label="Close preview"
+                  >
+                    <IconX className="size-4" />
+                  </button>
+                </div>
+                <div className="flex-1 overflow-auto bg-secondary/30 p-3 flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={preview.src} alt={preview.alt} className="w-full h-auto max-h-[65vh] object-contain rounded-xl" />
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
       {/* Adjust positions — commented for now
       <div className="mt-2 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setSetterEnabled((v) => !v)}
-          className="text-xs px-2.5 py-1 rounded-full border bg-secondary hover:bg-secondary/80 transition-colors"
-        >
+        <button type="button" onClick={() => setSetterEnabled((v) => !v)} className="text-xs px-2.5 py-1 rounded-full border bg-secondary hover:bg-secondary/80 transition-colors">
           {setterEnabled ? "Done" : "Adjust positions"}
         </button>
         {setterEnabled && (
           <>
             <div className="flex rounded-full border bg-secondary p-0.5">
-              <button
-                type="button"
-                onClick={() => setSetterMode("desktop")}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${setterMode === "desktop" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
-              >
-                Desktop
-              </button>
-              <button
-                type="button"
-                onClick={() => setSetterMode("mobile")}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${setterMode === "mobile" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
-              >
-                Mobile
-              </button>
+              <button type="button" onClick={() => setSetterMode("desktop")} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${setterMode === "desktop" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>Desktop</button>
+              <button type="button" onClick={() => setSetterMode("mobile")} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${setterMode === "mobile" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>Mobile</button>
             </div>
             <span className="text-xs text-muted-foreground hidden sm:inline">Drag icons → copy</span>
-            <button
-              type="button"
-              onClick={copyPositions}
-              className="ml-auto text-xs px-2.5 py-1 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black hover:opacity-90"
-            >
-              {copied ? "Copied!" : `Copy ${setterMode}`}
-            </button>
+            <button type="button" onClick={copyPositions} className="ml-auto text-xs px-2.5 py-1 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black hover:opacity-90">{copied ? "Copied!" : `Copy ${setterMode}`}</button>
           </>
         )}
       </div>
-
       {setterEnabled && (
         <div className="mt-3 rounded-xl border bg-background p-3 shadow-sm">
-          <p className="text-xs font-medium text-muted-foreground mb-2">
-            Editing {setterMode} positions {isMobile ? "(you are on mobile viewport)" : "(desktop viewport)"} — drag icons inside the card
-          </p>
-          <pre className="text-[11px] leading-3 bg-secondary rounded-md p-2 overflow-auto max-h-48 whitespace-pre-wrap break-all">
-            {JSON.stringify(
-              panelIcons.map((it) => ({
-                src: it.src,
-                left: it.left,
-                top: it.top,
-                leftMobile: it.leftMobile,
-                topMobile: it.topMobile,
-              })),
-              null,
-              2,
-            )}
-          </pre>
+          <p className="text-xs font-medium text-muted-foreground mb-2">Editing {setterMode} positions {isMobile ? "(you are on mobile viewport)" : "(desktop viewport)"} — drag icons inside the card</p>
+          <pre className="text-[11px] leading-3 bg-secondary rounded-md p-2 overflow-auto max-h-48 whitespace-pre-wrap break-all">{JSON.stringify(panelIcons.map((it) => ({ src: it.src, left: it.left, top: it.top, leftMobile: it.leftMobile, topMobile: it.topMobile })), null, 2)}</pre>
         </div>
       )}
       */}
