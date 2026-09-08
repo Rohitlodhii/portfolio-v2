@@ -131,17 +131,17 @@ const ProjectsPage = ({
                                 : 'text-primary'
                         }`}>{project.title}</h2>
                     </div>
-                    <div className="text-sm text-muted-foreground flex items-center gap-2 relative z-0">
+                    <div className="text-sm text-muted-foreground flex items-center gap-2 relative">
                         <p>{project.date}</p>
                         <a
                             href={liveSiteHref(project.url)}
                             target="_blank"
-                            rel="noreferrer"
+                            rel="noopener noreferrer"
                             aria-label={`Open the ${project.title} site`}
-                            className="relative z-20 p-1 hover:bg-white dark:hover:bg-white/10 group rounded-lg transition ease-in "
+                            onClick={(e) => e.stopPropagation()}
+                            className="relative z-20 flex items-center justify-center size-7 rounded-lg bg-transparent hover:bg-white dark:hover:bg-white/10 border border-transparent hover:border-black/5 dark:hover:border-white/10 hover:shadow-sm group transition-all duration-200"
                         >
-
-                        <IconArrowUpRight className="size-5 font-medium transition group-hover:text-black dark:group-hover:text-white ease-in group-hover:rotate-45 "/>
+                        <IconArrowUpRight className="size-4 transition duration-200 group-hover:text-black dark:group-hover:text-white group-hover:rotate-45" />
                         </a>
                     </div>
                 </div>

@@ -122,11 +122,18 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+html {
+  cursor: url('/floatingicon/cursor.svg') 0 0, url('/floatingimages/cursor.svg') 0 0, auto;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  cursor: url('/floatingicon/cursor.svg') 0 0, url('/floatingimages/cursor.svg') 0 0, auto;
 }
+
+
 
 /* Neutral text selection — a translucent wash of the foreground so it reads the
    same in light and dark without pulling in any hue. */

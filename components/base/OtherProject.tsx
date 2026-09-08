@@ -9,7 +9,7 @@ const OtherProject = () => {
         I made tons of projects other than these, you can always check them on{' '}
         <Link
           href="/project"
-          className="inline-flex items-center gap-1 underline bg-neutral-600 text-white rounded-sm px-2"
+          className="inline-flex items-center gap-1  bg-neutral-600 text-white rounded-sm px-2"
         >
           other projects
           <IconArrowUpRight className="size-4" />
