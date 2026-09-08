@@ -21,7 +21,7 @@ export default function Descriptionpage({ data }: DescriptionPageProps) {
         I built morrit , a compile time react inspector, fastdroid which is performant android emulator studio and tons of different useful apps.
       </div>
       <div>
-        You can find me on <Link className=" bg-neutral-600 text-white cursor-pointer px-2 rounded-sm" href="linkedin.in">Linkedin</Link> , <Link className="  bg-neutral-600 text-white px-2 cursor-pointer rounded-sm" href="linkedin.in">instagram</Link> , reach me via <Link className="  bg-neutral-600  text-white px-1 cursor-pointer rounded-sm" href="linkedin.in">email</Link> or you can find me at most of the places with username @rohitlodhii.
+        You can find me on <Link className=" bg-neutral-600 text-white cursor-pointer px-2 rounded-sm" href="www.linkedin.com/in/rohitlodhiii">Linkedin</Link> , <Link className="  bg-neutral-600 text-white px-2 cursor-pointer rounded-sm" href="https://www.instagram.com/rohitlodhiii">instagram</Link> , reach me via <Link className="  bg-neutral-600  text-white px-1 cursor-pointer rounded-sm" href="mailto:rohitlodhi0225@gmail.com">email</Link> or you can find me at most of the places with username @rohitlodhii.
       </div>
       <div className="flex gap-2 ">
         <Link className="flex bg-secondary px-2 py-1 rounded-xl gap-1 items-center" href="https://github.com/rohitlodhii"> <IconBrandGithub className="size-4"/> <span>Github</span> </Link>
