@@ -147,9 +147,8 @@ export function NewDock() {
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
       <motion.div
-        initial={false}
         animate={{
-          width: isExpanded ? 256 : 194,
+          width: isExpanded ? 256 : 174,
           height: isExpanded ? 152 : 48,
           borderRadius: isExpanded ? 28 : 24,
         }}
@@ -158,13 +157,8 @@ export function NewDock() {
           stiffness: 220,
           damping: 26,
         }}
-       className="relative flex flex-col justify-end bg-white/10 dark:bg-black/35 backdrop-blur-md border border-white/20 dark:border-neutral-800 p-1 shadow-[inset_1px_1px_1px_rgba(255,255,255,0.6),inset_-1px_-1px_1px_rgba(255,255,255,0.6),0_12px_40px_rgba(0,0,0,0.12)] dark:shadow-[inset_1px_1px_1px_rgba(255,255,255,0.1),inset_-1px_-1px_1px_rgba(255,255,255,0.1),0_12px_40px_rgba(0,0,0,0.5)] select-none overflow-hidden"
-        style={{
-          width: isExpanded ? 256 : 194,
-          height: isExpanded ? 152 : 48,
-          borderRadius: isExpanded ? 28 : 24,
-          transformOrigin: "center bottom",
-        }}
+       className="relative flex flex-col justify-end bg-white/10 dark:bg-black/35 backdrop-blur-sm border border-white/20 dark:border-neutral-800 p-1 shadow-[inset_1px_1px_1px_rgba(255,255,255,0.6),inset_-1px_-1px_1px_rgba(255,255,255,0.6),0_12px_40px_rgba(0,0,0,0.12)] dark:shadow-[inset_1px_1px_1px_rgba(255,255,255,0.1),inset_-1px_-1px_1px_rgba(255,255,255,0.1),0_12px_40px_rgba(0,0,0,0.5)] select-none overflow-hidden"
+        style={{ transformOrigin: "center bottom" }}
       >
         <AnimatePresence>
           {isExpanded && (
@@ -187,8 +181,12 @@ export function NewDock() {
           )}
         </AnimatePresence>
 
-        {/* Bottom controls row */}
-        <div className="flex items-center justify-between w-full px-1.5 h-10 shrink-0">
+        {/* Bottom controls row (remains at original place, centered with mx-auto).
+            164px = two 40px icons + one 4px gap, then a 4px gap and the 76px
+            control group. The collapsed width above (174) is exactly this plus
+            p-1 (8px) and the 1px border on each side, since the inline width is
+            a border-box value. */}
+        <div className="flex items-center gap-1 w-[164px] mx-auto h-10 shrink-0">
           <div className="flex items-center gap-1 shrink-0">
             {navItems.map((item) => {
               const isActive = item.match(pathname);
@@ -203,10 +201,11 @@ export function NewDock() {
                   className="group relative select-none outline-none touch-manipulation"
                 >
                   <motion.div
+
                     whileTap={{ scale: 0.94 }}
                     transition={{ type: "spring", stiffness: 450, damping: 16 }}
                     className={cn(
-                      "relative size-10 rounded-full flex items-center justify-center transition-colors cursor-pointer select-none",
+                      "relative size-10 rounded-full flex items-center justify-center transition-colors cursor-pointer select-none mt-0.5",
                       isActive
                         ? "bg-white/10 dark:bg-white/10 border border-black/10 dark:border-white/20 backdrop-blur-xl shadow-md dark:shadow-lg dark:shadow-black/40 text-orange-200"
                         : "text-muted-foreground hover:text-foreground border border-transparent"
@@ -234,7 +233,7 @@ export function NewDock() {
             })}
           </div>
 
-          <div className="h-10 flex items-center justify-center w-[76px] gap-1 bg-black/5 dark:bg-white/10 border border-black/5 dark:border-white/10 backdrop-blur-md rounded-full p-1 shrink-0">
+          <div className="h-10 flex items-center justify-center w-[76px] gap-1 bg-border/70 dark:bg-border/90 backdrop-blur-lg rounded-full p-1 shrink-0">
             <button
               onClick={() => setIsExpanded((prev) => !prev)}
               aria-label="Toggle settings panel"
@@ -250,10 +249,14 @@ export function NewDock() {
                   ])
                   }
               >
+
                 <IconSettings className="size-4 text-muted-foreground" />
               </motion.div>
             </button>
-            {/* Scroll progress for the current route. */}
+            {/* Scroll progress for the current route. Not a control, so it's a div
+                rather than a button — and aria-hidden, because the scroll position is
+                already exposed to assistive tech natively and a ring driven by a
+                MotionValue can't keep an aria-valuenow in sync without re-rendering. */}
             <div
               aria-hidden="true"
               className="h-full flex items-center justify-center bg-background/90 dark:bg-background/60 backdrop-blur-2xl aspect-square rounded-full w-8 border border-black/5 dark:border-white/5 shadow-sm"
