@@ -8,8 +8,7 @@ import CurrentProject from '@/components/base/CurrentProject'
 import OtherProjects from '@/components/base/OtherProjects'
 
 
-// Project data comes from a JSON file that can change while the server is running.
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const page = async () => {
   const projects = await getProjects()

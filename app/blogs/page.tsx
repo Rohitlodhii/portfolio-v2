@@ -5,7 +5,7 @@ import { listBlogPosts } from '@/lib/blogs'
 import { BlogList } from '@/components/ui/blog-list';
 
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const page = async () => {
   const posts = await listBlogPosts()

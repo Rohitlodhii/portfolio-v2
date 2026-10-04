@@ -1,4 +1,4 @@
-﻿import ProfilePage from "@/components/base/profile";
+import ProfilePage from "@/components/base/profile";
 import Descriptionpage from "@/components/base/description";
 import { getDescription, getProjects } from "@/config/data/files";
 import ProjectsPage from "@/components/base/Projects";
@@ -11,8 +11,8 @@ import BlogDescription from "@/components/base/BlogDescription";
 import WorkTogether from "@/components/base/worktogether";
 import { SiteFooter } from "@/components/ui/site-footer";
 
-// These values come from JSON files that can change while the server is running.
-export const dynamic = "force-dynamic";
+// ISR: revalidates when JSON files or posts update
+export const revalidate = 60;
 
 export default async function Home() {
 

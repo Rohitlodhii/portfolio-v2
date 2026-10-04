@@ -10,7 +10,7 @@ import { SiteFooter } from "@/components/ui/site-footer";
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rohitlodhi.in";
@@ -28,10 +28,7 @@ export const metadata: Metadata = {
   creator: "Rohit Lodhi",
   publisher: "Rohit Lodhi",
   icons: {
-    icon: [
-      { url: "/icon.ico" },
-      { url: "/favicon.ico" },
-    ],
+    icon: "/icon.ico",
     shortcut: "/icon.ico",
     apple: "/icon.ico",
   },

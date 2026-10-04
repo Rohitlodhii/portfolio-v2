@@ -299,6 +299,8 @@ const WorkTogether = () => {
                   <img
                     src={item.src}
                     alt={item.alt}
+                    loading="lazy"
+                    decoding="async"
                     draggable={false}
                     className="w-full h-full object-cover rounded-md sm:rounded-lg pointer-events-none select-none"
                   />
@@ -341,7 +343,7 @@ const WorkTogether = () => {
                 </div>
                 <div className="flex-1 overflow-auto bg-secondary/30 p-3 flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={preview.src} alt={preview.alt} className="w-full h-auto max-h-[65vh] object-contain rounded-xl" />
+                  <img src={preview.src} alt={preview.alt} loading="lazy" decoding="async" className="w-full h-auto max-h-[65vh] object-contain rounded-xl" />
                 </div>
               </div>
             </motion.div>
